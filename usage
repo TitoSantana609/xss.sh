@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Prompt the user for the URL
+read -p "Enter the URL: " URL
+
+# Define the output file based on the URL
+BASE_FILENAME=$(echo "$URL" | sed 's/https\?:\/\///;s/[^a-zA-Z0-9]/_/g')
+OUTPUT_FILE="${BASE_FILENAME}.txt"
+
+# Run the gau command
+echo $URL | gau --o $OUTPUT_FILE
+echo "GAU command executed. Results saved to $OUTPUT_FILE"
+
+# Run the additional commands to filter for XSS
+XSS_OUTPUT_FILE="xss_${BASE_FILENAME}.txt"
+cat $OUTPUT_FILE | gf xss | uro | tee $XSS_OUTPUT_FILE
+
+# Notify the user
+echo "Filtered potential XSS results saved to $XSS_OUTPUT_FILE"
